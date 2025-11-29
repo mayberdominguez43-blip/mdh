@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Para Sulmy ❤️</title>
+  <style>
+    :root{
+      --bg1:#0f1022;
+      --bg2:#2c1053;
+      --accent:#ff5c8a;
+      --soft:#ffd8e8;
+    }
+    html,body{height:100%;margin:0;font-family:system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      overflow:hidden;color:var(--soft);
+      display:flex;align-items:center;justify-content:center;padding:20px;
+    }
+
+    /* Card */
+    .card{
+      width:940px;max-width:96%;background:rgba(255,255,255,0.03);backdrop-filter:blur(6px);
+      border-radius:20px;padding:28px;box-shadow:0 10px 30px rgba(0,0,0,0.45);position:relative;overflow:hidden;
+    }
+
+    header{display:flex;gap:18px;align-items:center}
+    .avatar{width:92px;height:92px;border-radius:18px;background:linear-gradient(135deg,var(--accent),#ff9fbf);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:34px;color:white;box-shadow:0 8px 30px rgba(255,92,138,0.15)}
+
+    h1{font-size:28px;margin:0}
+    p.lead{margin:6px 0 18px;opacity:0.95}
+
+    /* Heart */
+    .heart-wrap{position:absolute;right:28px;top:-18px;pointer-events:none}
+    .heart{
+      width:220px;height:220px;display:block;transform-origin:center center;opacity:0.14;
+      animation:beat 1.2s ease-in-out infinite;
+      filter:drop-shadow(0 8px 18px rgba(255,92,138,0.18));
+    }
+    @keyframes beat{
+      0%{transform:scale(0.9)}
+      50%{transform:scale(1)}
+      100%{transform:scale(0.9)}
+    }
+
+    /* Floating petals */
+    .petal{position:absolute;width:18px;height:18px;background:var(--soft);border-radius:50%;opacity:0.9;transform:rotate(45deg);box-shadow:0 6px 18px rgba(0,0,0,0.12)}
+
+    /* Message box */
+    .message{
+      margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .typing{font-size:20px;line-height:1.5;min-height:72px;white-space:pre-wrap}
+    .cursor{display:inline-block;width:10px;background:var(--soft);margin-left:6px;animation:blink 1s steps(2) infinite}
+    @keyframes blink{50%{opacity:0}}
+
+    /* Buttons */
+    .controls{display:flex;gap:12px;margin-top:18px}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.09);padding:10px 14px;border-radius:10px;color:var(--soft);cursor:pointer}
+    .btn:active{transform:translateY(1px)}
+
+    /* Confetti (simple) */
+    .confetti-piece{position:absolute;width:9px;height:14px;opacity:0.95}
+
+    /* footer small */
+    footer{opacity:0.8;font-size:13px;margin-top:14px}
+
+    /* Responsive */
+    @media (max-width:560px){.avatar{width:68px;height:68px;font-size:26px}.heart{width:140px;height:140px;right:10px}}
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <div class="heart-wrap" aria-hidden>
+      <!-- Simple SVG heart -->
+      <svg class="heart" viewBox="0 0 32 29" xmlns="http://www.w3.org/2000/svg">
+        <path fill="url(#g)" d="M23.6 0C20.9 0 18.6 1.6 16 4.2 13.4 1.6 11.1 0 8.4 0 3.8 0 0 3.7 0 8.3c0 9.6 16.2 18.9 16.9 19.3.3.2.6.2.9 0C16.8 27.2 33 17.9 33 8.3 33 3.7 29.2 0 24.6 0z" transform="scale(0.92)"/>
+        <defs>
+          <linearGradient id="g" x1="0" x2="1">
+            <stop offset="0" stop-color="#ff9fbf"/>
+            <stop offset="1" stop-color="#ff5c8a"/>
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+
+    <header>
+      <div class="avatar">S</div>
+      <div>
+        <h1>Para Sulmy ❤️</h1>
+        <p class="lead">Una pequeña animación creada especialmente para ti — ábrela en Visual Studio / Visual Studio Code y préstala a Sulmy.</p>
+      </div>
+    </header>
+
+    <div class="message">
+      <div class="typing" id="typingArea" aria-live="polite"></div>
+      <div class="controls">
+        <button id="replayBtn" class="btn">Volver a reproducir</button>
+        <button id="confettiBtn" class="btn">Lluvia de corazones</button>
+        <button id="musicBtn" class="btn">Reproducir/pausar música</button>
+      </div>
+      <footer>Hecho con ♥ por ti. Personaliza este archivo para cambiar el texto, los colores o agregar tu propia música (arrastra un .mp3 a la carpeta y referencia su nombre).</footer>
+    </div>
+  </div>
+
+  <script>
+    // Mensaje a mostrar (personalizado)
+    const message = `Hola Sulmy!\n\nQuise crear esto para decirte que eres muy especial, que tu risa ilumina mis días y que cada momento contigo es un tesoro.\n\nCon cariño, quien te tiene en el corazón ❤️`;
+
+    const typingArea = document.getElementById('typingArea');
+    const replayBtn = document.getElementById('replayBtn');
+    const confettiBtn = document.getElementById('confettiBtn');
+    const musicBtn = document.getElementById('musicBtn');
+
+    let typingIndex = 0;
+    let typingTimer = null;
+
+    function typeWriter(){
+      if(typingIndex <= message.length){
+        typingArea.textContent = message.slice(0, typingIndex);
+        // add blinking cursor
+        const span = document.createElement('span'); span.className='cursor';
+        typingArea.appendChild(span);
+        typingIndex++;
+        typingTimer = setTimeout(typeWriter, 40 + Math.random()*40);
+      } else {
+        clearTimeout(typingTimer);
+      }
+    }
+
+    function startTyping(){
+      clearTimeout(typingTimer);typingIndex=0;typingArea.textContent='';typeWriter();
+    }
+
+    // petal generator
+    function spawnPetal(){
+      const p = document.createElement('div');p.className='petal';
+      const size = 12 + Math.random()*18;p.style.width = size+'px';p.style.height = size+'px';
+      p.style.left = Math.random()*100 + '%';p.style.top = '-8%';
+      p.style.opacity = 0.8+Math.random()*0.2;
+      document.body.appendChild(p);
+      const fall = 5000 + Math.random()*6000;
+      p.animate([
+        {transform:`translateY(0) rotate(${Math.random()*360}deg)`, opacity: p.style.opacity, offset:0},
+        {transform:`translateY(${window.innerHeight+200}px) translateX(${(Math.random()-0.5)*300}px) rotate(${Math.random()*1080}deg)`, opacity:0.2, offset:1}
+      ],{duration:fall,easing:'ease-in'});
+      setTimeout(()=>p.remove(), fall+50);
+    }
+
+    // spawn petals continuously
+    let petalInterval = setInterval(spawnPetal, 800);
+
+    // confetti / hearts
+    function spawnHearts(){
+      for(let i=0;i<28;i++){
+        const c = document.createElement('div');c.className='confetti-piece';
+        const w = 8+Math.random()*12;c.style.width = w+'px';c.style.height = w+'px';
+        c.style.left = (20+Math.random()*60) + '%';c.style.top='-10%';
+        c.style.background = `linear-gradient(45deg, rgba(255,92,138,1), rgba(255,159,191,1))`;
+        c.style.borderRadius='4px';
+        document.body.appendChild(c);
+        const travel = 1200+Math.random()*2400;
+        c.animate([
+          {transform:'translateY(0) rotate(0deg)', opacity:1},
+          {transform:`translateY(${window.innerHeight+200}px) translateX(${(Math.random()-0.5)*600}px) rotate(${Math.random()*720}deg)`, opacity:0}
+        ],{duration:travel,easing:'cubic-bezier(.2,.7,.2,1)'});
+        setTimeout(()=>c.remove(), travel+60);
+      }
+    }
+
+    confettiBtn.addEventListener('click', ()=>{spawnHearts();});
+
+    // replay
+    replayBtn.addEventListener('click', ()=>{startTyping();});
+
+    // music control (no file included — user can add 'music.mp3' file into same folder)
+    const audio = new Audio('music.mp3');audio.loop=true;let audioLoaded=false;
+    audio.addEventListener('canplaythrough', ()=>audioLoaded=true);
+    musicBtn.addEventListener('click', ()=>{
+      if(!audioLoaded){
+        // try to load; if file missing, alert user
+        audio.load();
+        audio.play().then(()=>{}).catch(()=>{
+          alert('No se encontró music.mp3 en la misma carpeta. Si deseas, añade un archivo .mp3 con ese nombre en el proyecto.');
+        });
+      } else {
+        if(audio.paused) audio.play(); else audio.pause();
+      }
+    });
+
+    // initial actions
+    startTyping();
+
+    // accessibility: let user press space to replay
+    document.addEventListener('keydown', (e)=>{if(e.code==='Space'){e.preventDefault();startTyping();}});
+
+    // small performance guard: stop extra petals when tab not visible
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.hidden){clearInterval(petalInterval);} else {petalInterval = setInterval(spawnPetal, 800);}    
+    });
+  </script>
+</body>
+</html>
